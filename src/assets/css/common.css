@@ -1,5 +1,9 @@
 :root {
   --primary-color: #ff9854;
+  --theme-linear-gradient: linear-gradient(90deg, #fa8c1d, #fcaf3f);
+
+  
+  /* --primary-translateX: 89px */
 
   /* 全局修改: 任何地方只要用到-van-tabbar-item-icon-size都会被修改掉 */
   /* --van-tabbar-item-icon-size: 30px !important; */
@@ -13,6 +17,19 @@
   overflow-y: auto;
   background-color: #fff;
 } */
+
+.ellipsis {
+  /* 溢出部分隐藏 */
+  overflow: hidden;
+  /* 文字用省略号代替超出部分 */
+  text-overflow: ellipsis;
+  /* 使用弹性伸缩盒模型显示 */
+  display: -webkit-box;
+  /* 限制在一个块元素显示的文本的行数 */
+  -webkit-line-clamp: 2;
+  /* 设置或检索伸缩盒对象的子元素的排列方式 */
+  -webkit-box-orient: vertical;
+}
 
 body {
   font-size: 14px;

@@ -44,13 +44,15 @@
     right: 0;
     display: flex;
     justify-content: space-between;
+
     .tabbr-item {
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      
+      background-color: #fff;
+      padding-top: 5px;
       &.active {
         color: var(--primary-color);
       }

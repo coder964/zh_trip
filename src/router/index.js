@@ -27,7 +27,15 @@ const routes = [
     meta: {
       hideTabBar: true
     }
+  },
+  {
+    path: "/search",
+    component: () => import("@/views/search/search.vue"),
+    meta: {
+      hideTabBar: true
+    }
   }
+  
 ]
 
 // 创建一个路由映射关系
