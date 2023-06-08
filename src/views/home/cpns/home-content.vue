@@ -1,11 +1,12 @@
 <script setup>
-import HomeContentItem from "./home_content_item.vue"
-const props = defineProps({
-  houseList: {
-    type: Array,
-    default: () => ({})
-  }
-})
+  import houseItemV9 from "@/components/house-item-v9/house-item-v9.vue"
+  import houseItemV3 from "@/components/house-item-v3/house-item-v3.vue"
+  const props = defineProps({
+    houseList: {
+      type: Array,
+      default: () => ({})
+    }
+  })
 
 
 </script>
@@ -19,7 +20,8 @@ const props = defineProps({
     </div>
     <div class="home_list" >
       <template v-for="(item, index) in houseList" :key="index">
-        <home-content-item :house-item="item.data"/>
+        <house-item-v9 v-if="item.discoveryContentType == 9" :house-item="item.data"/>
+        <house-item-v3 v-else-if="item.discoveryContentType == 3" :house-item="item.data"/>
       </template>
     </div>
   </div>

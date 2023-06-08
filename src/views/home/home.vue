@@ -1,4 +1,5 @@
 <script setup>
+  import { ref, watch, computed } from "vue"
   import { storeToRefs } from "pinia"
   //导入组件 
   import HomeNavBar from "./cpns/home-nav-bar.vue"
@@ -8,6 +9,8 @@
 
   // 导入useHomeStore
   import useHomeStore from "@/stores/modules/home"
+
+  import useScroll from "@/hooks/useScroll"
   
   // 发送网络请求
   const homeStore = useHomeStore()
@@ -21,7 +24,30 @@
     categories, 
     houseList 
   } = storeToRefs(homeStore)
-   
+ 
+  // 封装到一个hook,调用hook
+  const { isReachBottom, scrollTop } = useScroll()
+  watch(isReachBottom, ( newValue ) => {
+    if( newValue ) {
+      homeStore.fetchHouseListData().then(() => {
+        console.log("aa");
+        isReachBottom.value = false
+      })
+    }
+  })
+
+  // 搜索框显示的控制的两种实现
+  // 实现1：使用watch
+    // const isShowSearchBar = ref(false)
+    // watch(scrollTop, ( newValue ) => {
+    //   isShowSearchBar.value = newValue >= 100
+    // })
+  // 实现2：使用计算属性
+    const isShowSearchBar = computed(() => {
+      return scrollTop.value >= 100
+    })
+
+
 </script>
 
 <template>
@@ -34,12 +60,16 @@
     </div>
     <!-- 搜索 -->
     <home-search :hot-suggests="hotSuggests" />
+    <div v-if="isShowSearchBar">hhhhhh</div>
     <home-categories :categories="categories" />
     <home-content :house-list="houseList"/>
   </div>
 </template>
 
 <style lang="less" scoped>
+.home {
+  padding-bottom: 49px;
+}
 .banner { 
   img {
     width: 100%;

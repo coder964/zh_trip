@@ -1,14 +1,19 @@
 <script setup>
-  const priceFn = (price) => {
+import { computed } from "vue"  
+
+const priceFn = (price) => {
   return "￥" + price
 } 
 
-defineProps({
+const props = defineProps({
   houseItem: {
     type: Object,
     default: () => ({})
   }
 })
+
+const value = computed(() => Number(props.houseItem.commentScore))
+
 </script>
 
 <template>
@@ -22,7 +27,14 @@ defineProps({
           {{ houseItem.houseName }}
         </div>
         <div class="particulars">
-          <div class="comment_score"></div>
+          <van-rate 
+            class="rate"
+            v-model="value"  
+            allow-half 
+            readonly
+            color="#fff"
+            size="16px"
+          />
           <span class="finalPrice">{{ priceFn(houseItem.finalPrice) }}</span>
         </div>
       </div>
@@ -32,7 +44,7 @@ defineProps({
 <style lang="less" scoped>
 .house_item {
   position: relative;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   
   .cover {
     img {
@@ -69,6 +81,8 @@ defineProps({
     }
     .particulars {
       margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
     }
   }
 }

@@ -12,6 +12,7 @@ const useHomeStore = defineStore("home", {
     // 推荐类别的数据
     categories: [],
     houseList: [],
+    currentPage: 1,
   }),
   actions: {
     async fetchHotSuggestsData() {
@@ -23,8 +24,9 @@ const useHomeStore = defineStore("home", {
       this.categories = res.data
     },
     async fetchHouseListData() {
-      const res = await getHouseList()
-      this.houseList = res.data
+      const res = await getHouseList(this.currentPage)
+      this.houseList.push(...res.data)
+      this.currentPage++
     }
   }
 })

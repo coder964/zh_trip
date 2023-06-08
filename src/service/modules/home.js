@@ -13,12 +13,12 @@ export function getCategories() {
     method: 'GET',
   })
 }
-export function getHouseList() {
+export function getHouseList(page) {
   return zhRequest.request({
     url: "/home/houselist",
     method: 'GET',
     params: {
-      page: 1
+      page
     }
   })
 }
