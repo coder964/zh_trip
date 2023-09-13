@@ -9,15 +9,20 @@
   // 解决动态资源图片url解析的问题
   import getAssetURL from "@/utils/get_asset_url"
 
-  // 
   const currentIndex = ref(0)
   // 点击事件的函数
   const tabbarClick = (index, path) => {
-    currentIndex.value = index
-
     // 切换路由
     router.push(path)
   }
+
+  router.beforeEach((to, from) => {
+    tabbarData.find(function (item) { 
+      if(item.path == to.path) {
+        currentIndex.value = item.index
+      }
+     })
+  })
 </script>
 
 <template>
@@ -25,7 +30,7 @@
       <template v-for="(item, index) in tabbarData">
       <div 
         class="tabbr-item" 
-        :class="{ active: currentIndex == index}"
+        :class="{ active: currentIndex === index}"
         @click="tabbarClick(index, item.path)"
         >
         <img v-if="currentIndex !== index" :src="getAssetURL(item.image)" alt="">

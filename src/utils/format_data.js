@@ -1,11 +1,11 @@
 import dayjs from "dayjs"
 
 // 时间格式化
-export function formatMonthDay(date, num) { 
+export function formatMonthDay(date, formatStr = "MM月DD日", num) { 
   // 没有传递num参数时使用默认值0
   num = num ?? 0
   date = date.getTime() + num
-  return dayjs(date).format("MM月DD日")
+  return dayjs(date).format(formatStr)
 }
 
 // 计算天数

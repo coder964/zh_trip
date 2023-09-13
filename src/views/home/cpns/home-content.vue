@@ -1,4 +1,5 @@
 <script setup>
+  import { useRouter } from "vue-router"
   import houseItemV9 from "@/components/house-item-v9/house-item-v9.vue"
   import houseItemV3 from "@/components/house-item-v3/house-item-v3.vue"
   const props = defineProps({
@@ -7,6 +8,12 @@
       default: () => ({})
     }
   })
+
+  const router = useRouter()
+  const itemClick = (item) => {
+    // 跳转到Detail页面
+    router.push("/detail/" + item.houseId)
+  }
 
 
 </script>
@@ -20,8 +27,16 @@
     </div>
     <div class="home_list" >
       <template v-for="(item, index) in houseList" :key="index">
-        <house-item-v9 v-if="item.discoveryContentType == 9" :house-item="item.data"/>
-        <house-item-v3 v-else-if="item.discoveryContentType == 3" :house-item="item.data"/>
+        <house-item-v9 
+          v-if="item.discoveryContentType == 9" 
+          :house-item="item.data"
+          @click="itemClick(item.data)"
+          />
+        <house-item-v3 
+          v-else-if="item.discoveryContentType == 3" 
+          :house-item="item.data"
+          @click="itemClick(item.data)"
+          />
       </template>
     </div>
   </div>

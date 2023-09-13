@@ -1,4 +1,5 @@
 <script setup>
+import { ref, onMounted, onBeforeUpdate, watch } from "vue"
 import { useRouter } from "vue-router"
 import useCityStore from "@/stores/modules/city"
 
@@ -17,6 +18,26 @@ const cityClick = (item) => {
   // 回退到上一级
   router.back()
 }
+
+const listEl = ref({})
+onBeforeUpdate(() => {
+  listEl.value = {}
+})
+
+const getListRef = (value) => {
+  console.log(value);
+   if(value !== null) {
+    const name = value?.innerText
+    listEl.value[name] = value
+   }
+}
+
+watch(listEl, (newValue, oldValue) => {
+  cityStore.listEls = {...newValue}
+}, {
+  deep: true
+})
+
 </script>
 
 <template>
@@ -34,7 +55,7 @@ const cityClick = (item) => {
     </div>
        <!-- 城市清单 -->
     <template v-for="(group, index) in groupData?.cities" :key="index">
-      <div class="city_title">{{ group.group }}</div>
+      <div class="city_title" :ref="getListRef">{{ group.group }}</div>
       <div class="city">
         <template v-for="(city, indey) in group.cities" :key="indey">
           <div class="city_item" @click="cityClick(city)">

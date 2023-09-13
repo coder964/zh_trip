@@ -1,6 +1,5 @@
 <script setup>
   import { ref } from "vue"
-
   // 定义props
   const props = defineProps({
     allCity: {

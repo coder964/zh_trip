@@ -5,6 +5,8 @@ import { useRouter } from "vue-router"
 import useCityStore from "@/stores/modules/city"
 // import 
 import { formatMonthDay, getDiffDays } from "@/utils/format_data"
+import useMainStore from '@/stores/modules/main';
+import { storeToRefs } from "pinia"
 
 const router = useRouter()
 const cityClick = () => {
@@ -41,17 +43,17 @@ const positionClick = () => {
 const cityStore = useCityStore()
 const currentCity = computed(() => cityStore.currentCity.cityName)
 
+
 // 日期范围的处理
-const nowDate = new Date()
-const newDate = new Date()
-newDate.setDate(nowDate.getDate() + 1)
+const mainStore = useMainStore()
+const { startDate, endDate } = storeToRefs(mainStore)
   // 格式化初始开始日期
-const startDate = ref(formatMonthDay(nowDate))
+const startDateStr = computed(() => formatMonthDay(startDate.value))
   // 格式化初始结束日期
-const endDate = ref(formatMonthDay(newDate))
+const endDateStr = computed(() => formatMonthDay(endDate.value))
 
   // 初始天数计算
-const stayCount = ref(getDiffDays(nowDate, newDate))
+const stayCount = ref(getDiffDays(startDate.value, endDate.value))
 
 const showCalendar = ref(false)
 
@@ -61,9 +63,9 @@ const onConfirm = (value) => {
   const selectStartDate = value[0]
   const selectEndDate = value[1]
     // 格式化开始时间
-  startDate.value = formatMonthDay(selectStartDate)
+  startDate.value = selectStartDate
     // 格式化结束时间
-  endDate.value = formatMonthDay(selectEndDate)
+  endDate.value = selectEndDate
     // 计算天数
   stayCount.value = getDiffDays(selectStartDate, selectEndDate)
     // 2.隐藏日历
@@ -100,14 +102,14 @@ const searchBtnClick = () => {
     <div class="start">
       <div class="date">
         <span class="tip">入住</span>
-        <span class="time">{{ startDate }}</span>
+        <span class="time">{{ startDateStr }}</span>
       </div>
     </div>
     <div class="stay">共{{ stayCount }}晚</div>
     <div class="end">
       <div class="date">
         <span class="tip">离店</span>
-        <span class="time">{{ endDate }}</span>
+        <span class="time">{{ endDateStr }}</span>
       </div>
     </div>
   </div>

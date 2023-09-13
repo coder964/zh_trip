@@ -1,11 +1,15 @@
+<script>
+  export default { name: "home" }
+</script>
 <script setup>
-  import { ref, watch, computed } from "vue"
+  import { ref, watch, computed, onActivated } from "vue"
   import { storeToRefs } from "pinia"
   //导入组件 
   import HomeNavBar from "./cpns/home-nav-bar.vue"
   import HomeSearch from "./cpns/home-search.vue"
   import HomeCategories from "./cpns/home-categories.vue"
   import HomeContent from "./cpns/home-content.vue"
+  import SearchBar from "@/components/search-bar/search-bar.vue"
 
   // 导入useHomeStore
   import useHomeStore from "@/stores/modules/home"
@@ -25,12 +29,14 @@
     houseList 
   } = storeToRefs(homeStore)
  
+  const homeRef = ref()
   // 封装到一个hook,调用hook
-  const { isReachBottom, scrollTop } = useScroll()
+  const { isReachBottom, scrollTop } = useScroll(homeRef)
   watch(isReachBottom, ( newValue ) => {
+    // console.log(newValue);
     if( newValue ) {
+      // 调用action发起网络请求
       homeStore.fetchHouseListData().then(() => {
-        console.log("aa");
         isReachBottom.value = false
       })
     }
@@ -44,14 +50,19 @@
     // })
   // 实现2：使用计算属性
     const isShowSearchBar = computed(() => {
-      return scrollTop.value >= 100
+      return scrollTop.value >= 360
     })
 
-
+  onActivated(() => {
+    // console.log(scrollTop.value);
+    homeRef.value.scrollTo({
+      top: scrollTop.value
+    })
+  })
 </script>
 
 <template>
-  <div class="home">
+  <div class="home" ref="homeRef">
     <!-- 头部 -->
     <home-nav-bar/>
     <!-- banner -->
@@ -60,8 +71,10 @@
     </div>
     <!-- 搜索 -->
     <home-search :hot-suggests="hotSuggests" />
-    <div v-if="isShowSearchBar">hhhhhh</div>
     <home-categories :categories="categories" />
+    <div class="search-bar" v-if="isShowSearchBar">
+      <search-bar :start-date="'09.19'" :end-date="'09.20'"/>
+    </div>
     <home-content :house-list="houseList"/>
   </div>
 </template>
@@ -69,11 +82,23 @@
 <style lang="less" scoped>
 .home {
   padding-bottom: 49px;
+  height: 100vh;
+  overflow-y: auto;
 }
 .banner { 
   img {
     width: 100%;
   }
 }
-
+.search-bar {
+  position: fixed;
+  z-index: 9;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45px;
+  padding: 16px 16px 10px;
+  background-color: #fff;
+  transition: height 1s;
+}
 </style>

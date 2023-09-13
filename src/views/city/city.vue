@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onUpdated,onBeforeUpdate, watch } from "vue";
 import { useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 
@@ -9,6 +9,9 @@ import useCityStore from "@/stores/modules/city";
 // 引入子组件
 import CityTabControl from "./cpns/city-tab-control.vue"
 import CityGroup from "./cpns/city-group.vue"
+import ListControl from "@/components/tab-control/list-control.vue"
+
+import useScroll from "@/hooks/useScroll"
 
 const router = useRouter();
 
@@ -42,15 +45,66 @@ const clearClick = () => {
 const cityStore = useCityStore();
 cityStore.fetchAllCityData();
 // 从Store中解构获取数据
-const { allCity } = storeToRefs(cityStore);
+const { allCity, listEls, currentIndex } = storeToRefs(cityStore);
 
-// 保存当前活跃的tab
-const tabActive = ref("cityGroup")
-
+// 方案1
 // 目的: 获取当前选中的标签的数据
 // 1.获取正确的key: 从city-tab-control组件上v-model双向绑定的tabAction中获取
 // 2.根据key从allCity获取数据, 默认直接获取的数据不是响应式的, 所以必须包裹computed
 const currentGroup = computed(() => allCity.value[tabActive.value])
+
+//方案2： 保存当前活跃的tab
+const tabActive = ref("cityGroup")
+
+// 侧边tab-control
+const cityRef = ref()
+let isClick = false
+let currentDistance = -1
+// 点击tab-control时滚动条滚动相应的距离
+const listClick = ( index ) => {
+	const key = Object.keys(listEls.value)[index]
+	const el = listEls.value[key]
+	const instance = el.offsetTop - 88
+	// console.log(instance)
+  isClick = true
+	currentDistance = instance
+
+	cityRef.value.scrollTo({
+    top: instance,
+    behavior: "smooth",
+  })
+}
+// 定义arr数组，用于保存所有元素的offsetTop
+const arr = ref([])
+onUpdated(() => {
+	for (const key in listEls.value) {
+		const el = listEls.value[key]
+		const instance = el.offsetTop - 88
+		arr.value.push(instance)
+	}
+})
+onBeforeUpdate(() => {
+  arr.value = []
+})
+
+// 拿到滚动条的实时距离
+const { scrollTop } = useScroll(cityRef)
+
+// 监听滚动条
+watch( scrollTop, (newValue, oldValue) => {
+	if(parseInt(newValue) == currentDistance) { 
+    isClick = false
+  }
+	if( isClick ) return
+
+  for(let i = arr.value.length - 1; i >= 0; i--) {
+		if( newValue >= arr.value[i]) {
+      currentIndex.value = i
+			// console.log(currentIndex.value)
+			break
+		}
+	}
+})
 
 </script>
 
@@ -62,7 +116,7 @@ const currentGroup = computed(() => allCity.value[tabActive.value])
 					<i class="iconfont icon-sousuo"></i>
 					<span v-show="isShow">城市/区域/位置</span>
 					<i class="iconfont icon-qingchu" v-show="inputValue" @click="clearClick"></i>
-					<input id="input" type="text" v-model="inputValue" @input="searchInput" />
+					<input id="input" type="text" v-model="inputValue" @input="searchInput"/>
 				</label>
 			</div>
 			<div class="cancel" @click="cancelClick">
@@ -70,14 +124,15 @@ const currentGroup = computed(() => allCity.value[tabActive.value])
 			</div>
 		</div>
 		<city-tab-control :allCity="allCity" v-model="tabActive"/>
-		<div class="content">
+		<div class="content" ref="cityRef">
 			<!-- 方案1： -->
-			<!-- <city-group :group-data="currentGroup"/> -->
+			<city-group :group-data="currentGroup"/>
 			<!-- 方案2： -->
-			<template v-for="(value, key, index) in allCity">
+			<!-- <template v-for="(value, key, index) in allCity">
 				<city-group :group-data="value" v-show="tabActive == key"/>
-			</template>
+			</template> -->
 		</div>
+    <list-control @listItmeClick="listClick"/>
 	</div>
 </template>
 

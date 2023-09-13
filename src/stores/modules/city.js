@@ -8,7 +8,9 @@ const useCityStore = defineStore("city" ,{
     allCity: {},
     currentCity: {
       cityName: "广州"
-    }
+    },
+    listEls: {},
+    currentIndex: -1
   }),
   actions: {
     async fetchAllCityData() {
